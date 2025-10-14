@@ -13,13 +13,30 @@ void solve(string S){
         else cnt_one++;
     }
 
+    cnt_zero /= 2;
+    cnt_one /= 2;
+
+    for(int i=0; i<S.length(); i++){
+        if(S[i] == '1'){
+            S[i] = 'x';
+            cnt_one--;
+        }
+        if(cnt_one == 0) break;
+    }
+
+    for(int i=S.length()-1; i>=0; i--){
+        if(S[i] == '0'){
+            S[i]     = 'x';
+            cnt_zero--;
+        }
+        if(cnt_zero == 0 ) break;
+    }
+
     string answer = "";
 
-    for(int i=1; i<=cnt_zero/2; i++){
-        answer += '0';
-    }
-    for(int i=1; i<=cnt_one/2; i++){
-        answer += '1';
+    for(int i=0; i<S.length(); i++){
+        if(S[i] == 'x') continue;
+        else answer += S[i];
     }
 
     cout << answer;
