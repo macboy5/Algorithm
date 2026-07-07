@@ -1,0 +1,62 @@
+import java.io.FileInputStream;
+import java.util.*;
+
+class Solution
+{
+    static int N, B;
+    static int[] array;
+    static int minDifference;
+    
+	public static void main(String args[]) throws Exception
+	{
+
+		Scanner sc = new Scanner(System.in);
+		int T;
+		T=sc.nextInt();
+
+
+		for(int test_case = 1; test_case <= T; test_case++)
+		{
+            
+		
+
+            N = sc.nextInt();
+            B = sc.nextInt();
+            
+            array = new int[N];
+			int sum = 0;
+            for(int i=0; i<N; i++){
+                array[i] = sc.nextInt();
+				sum += array[i];
+            }
+            
+            minDifference = Integer.MAX_VALUE;
+			findMin(0,0);          
+            
+            System.out.println("#" + test_case + " " + minDifference);
+
+
+		}
+	}
+    
+    static void findMin(int cnt, int sum){
+    	
+        if (sum - B >= minDifference) {
+                    return;
+         }
+        
+        if (cnt == N) {
+                    // 점원들의 합이 선반 높이 B 이상일 때만 최솟값 갱신
+                    if (sum >= B) {
+                        minDifference = Math.min(minDifference, sum - B);
+                    }
+                    return;
+                }
+        
+        findMin(cnt+1, sum+array[cnt]);
+        
+        findMin(cnt+1, sum);
+        
+        
+    }
+}
