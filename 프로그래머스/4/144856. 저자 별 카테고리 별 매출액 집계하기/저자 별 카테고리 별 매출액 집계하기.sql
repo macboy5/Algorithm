@@ -1,0 +1,37 @@
+-- 코드를 입력하세요
+WITH BA AS (
+    SELECT 
+        b.BOOK_ID, 
+        b.CATEGORY, 
+        b.AUTHOR_ID, 
+        b.PRICE, 
+        b.PUBLISHED_DATE, 
+        a.AUTHOR_NAME
+    FROM BOOK b
+    JOIN AUTHOR a
+    ON b.AUTHOR_ID = a.AUTHOR_ID
+),
+BAS AS (
+    SELECT         
+        BA.BOOK_ID, 
+        CATEGORY, 
+        AUTHOR_ID, 
+        PRICE, 
+        PUBLISHED_DATE, 
+        AUTHOR_NAME,
+        SALES_DATE,
+        SALES
+    FROM BA 
+    JOIN BOOK_SALES AS S
+    ON BA.BOOK_ID = S.BOOK_ID
+    WHERE SALES_DATE BETWEEN '2022-01-01' AND '2022-01-31'
+
+)
+
+
+SELECT AUTHOR_ID,	AUTHOR_NAME,	CATEGORY,
+SUM(PRICE*SALES) AS TOTAL_SALES
+FROM BAS
+GROUP BY AUTHOR_ID, CATEGORY
+ORDER BY AUTHOR_ID ASC, CATEGORY DESC;
+
