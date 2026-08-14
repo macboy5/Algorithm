@@ -1,93 +1,78 @@
 import java.util.*;
 class Solution {
-    
-    static class MineralCnt{
-        private int idx;
-        private int diamondCnt;
-        private int ironCnt;
-        private int stoneCnt;
-        
-        MineralCnt(int idx, int diamondCnt, int ironCnt, int stoneCnt){
-            this.idx = idx;
-            this.diamondCnt = diamondCnt;
-            this.ironCnt = ironCnt;
-            this.stoneCnt = stoneCnt;
-        }
-    }
-    
     public int solution(int[] picks, String[] minerals) {
         int answer = 0;
         
         int len = minerals.length;
-    
-        List<MineralCnt> mineralCntList = new ArrayList<>();
         
-        int totalPicks = 0;
-        for(int pick : picks){
-            totalPicks += pick;
-        }
+        boolean diamondExists = false;
+        boolean ironExists = false;
+        boolean stoneExists = false;
         
-        int maxMineralLen = Math.min(len, totalPicks * 5);
+        List<String> toolList = new ArrayList<>();
+        int maxIdx = -1;
+        if(len%5 ==0 ) maxIdx = len/5;
+        else maxIdx = len/5+1;
         
         // 5개씩 잘라서 검사
-        for (int i = 0; i < maxMineralLen; i += 5) {
-            int diamondCnt = 0;
-            int ironCnt = 0;
-            int stoneCnt = 0;
+        for(int i=0; i< maxIdx ; i++){
             
-            for (int j = i; j < i + 5 && j < maxMineralLen; j++) {
-                if (minerals[j].equals("diamond")) {
-                    diamondCnt++;
-                } else if (minerals[j].equals("iron")) {
-                    ironCnt++;
-                } else if (minerals[j].equals("stone")) {
-                    stoneCnt++;
+            for(int j=0; j<5; j++){
+                int idx = i*5 + j;
+                if(idx < len){
+                    if(minerals[idx].equals("diamond")){
+                        diamondExists = true;
+                    }
+                    else if(minerals[idx].equals("iron")){
+                        ironExists = true;
+                    }
+                    else if(minerals[idx].equals("stone")){
+                        stoneExists = true;
+                    }
                 }
             }
             
-            mineralCntList.add(new MineralCnt(i/5, diamondCnt, ironCnt, stoneCnt));
+            if(diamondExists && picks[0] > 0){
+                picks[0]--;
+                toolList.add("dia");
+            }
+            else if(!diamondExists && ironExists){
+                if(picks[1]>0){
+                    picks[1]--;
+                    toolList.add("iron");
+                }
+                else if(picks[2]>0){
+                    picks[2]--;
+                    toolList.add("stone");                    
+                }
+            }
+            else if(!diamondExists && !ironExists && stoneExists){
+                if(picks[2]>0){
+                    picks[2]--;
+                    toolList.add("stone");
+                }
+            }
+        
         }
         
-        mineralCntList.sort((m1, m2) -> {
-                    if (m1.diamondCnt != m2.diamondCnt) {
-                        return m2.diamondCnt - m1.diamondCnt;
-                    }
-                    if (m1.ironCnt != m2.ironCnt) {
-                        return m2.ironCnt - m1.ironCnt;
-                    }
-                    return m2.stoneCnt - m1.stoneCnt;
-                });
-        
-        
+        int cnt = 0;
         int toolIdx = 0;
-        String[] tools = {"dia", "iron" , "stone"};
-        
-        List<String> assignedTools = new ArrayList<>();
-        for(int i=0; i<picks.length; i++){
-            while(picks[i]>0 && toolIdx < mineralCntList.size()){
-                assignedTools.add(tools[i]);
-                picks[i]--;
+        for(String mineral : minerals){
+
+                String tool = toolList.get(toolIdx);
+                answer += calculate(tool, mineral);
+                cnt++;
+
+            if(cnt == 5) {
+                cnt = 0;
                 toolIdx++;
             }
-        }
-        
-        for(int i=0; i<mineralCntList.size(); i++){
-            if(i >= assignedTools.size()) break;
-            
-            MineralCnt mc = mineralCntList.get(i);
-            String tool = assignedTools.get(i);
-            
-            int startIdx = mc.idx*5;
-            for(int j=startIdx ; j<startIdx + 5 && j < maxMineralLen; j++){
-                answer += calculate(tool, minerals[j]);
-            }
-            
         }
         
         return answer;
     }
     
-    public int calculate(String tool, String mineral){
+    int calculate(String tool, String mineral){
         
         if(tool.equals("dia")) return 1;
         else if(tool.equals("iron")){
